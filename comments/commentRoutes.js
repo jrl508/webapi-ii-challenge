@@ -3,6 +3,7 @@ const db = require('../data/db')
 
 const router = express.Router();
 
+//GET
 
 router.get('/:id/comments', (req,res)=>{
     const {id} = req.params;
@@ -18,6 +19,25 @@ router.get('/:id/comments', (req,res)=>{
         .catch(err =>{
             res.status(500).json({error: "The comments information could not be retrieved."})
         })
+
+})
+
+// POST
+
+router.post('/:id/comments', (req,res) => {
+    const newComment = req.body;
+
+    if(!newComment.text){
+        res.status(400).json({ errorMessage: "Please provide text for the comment." })
+    }else {
+        db.insertComment({post_id: req.params.id, ...newComment})
+            .then( comment => {
+                res.status(201).json(comment);
+            })
+            .catch(err => {
+                res.status(500).json({ error: "There was an error while saving the comment to the database" })
+            })
+    }
 
 })
 
